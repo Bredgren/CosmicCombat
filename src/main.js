@@ -18771,16 +18771,70 @@ $packages["log"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/Bredgren/gogame"] = (function() {
-	var $pkg = {}, $init, fmt, js, jquery, log, math, Color, sliceType, structType, funcType, jq, console, canvas, ctx, Ready, SetCanvas, Canvas, SetCanvasResolution, FillCanvas, Log;
+	var $pkg = {}, $init, fmt, js, jquery, log, math, Canvas, Color, Surface, ptrType, sliceType, structType, funcType, ptrType$1, jq, console, canvas, newCanvas, Ready, SetCanvas, GetCanvas, SetFullscreen, Log;
 	fmt = $packages["fmt"];
 	js = $packages["github.com/gopherjs/gopherjs/js"];
 	jquery = $packages["github.com/gopherjs/jquery"];
 	log = $packages["log"];
 	math = $packages["math"];
+	Canvas = $pkg.Canvas = $newType(0, $kindStruct, "gogame.Canvas", "Canvas", "github.com/Bredgren/gogame", function(canvas_, ctx_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.canvas = null;
+			this.ctx = null;
+			return;
+		}
+		this.canvas = canvas_;
+		this.ctx = ctx_;
+	});
 	Color = $pkg.Color = $newType(8, $kindString, "gogame.Color", "Color", "github.com/Bredgren/gogame", null);
+	Surface = $pkg.Surface = $newType(8, $kindInterface, "gogame.Surface", "Surface", "github.com/Bredgren/gogame", null);
+	ptrType = $ptrType(Canvas);
 	sliceType = $sliceType($emptyInterface);
 	structType = $structType([]);
 	funcType = $funcType([], [], false);
+	ptrType$1 = $ptrType(js.Object);
+	newCanvas = function(canvas$1) {
+		var $ptr, canvas$1;
+		return new Canvas.ptr(canvas$1, canvas$1.getContext($externalize("2d", $String)));
+	};
+	Canvas.ptr.prototype.Blit = function(source, x, y) {
+		var $ptr, c, source, x, y;
+		c = this;
+		return;
+	};
+	Canvas.prototype.Blit = function(source, x, y) { return this.$val.Blit(source, x, y); };
+	Canvas.ptr.prototype.Fill = function(color) {
+		var $ptr, c, color;
+		c = this;
+		c.ctx.fillStyle = $externalize(color, Color);
+		c.ctx.fillRect(0, 0, c.canvas.width, c.canvas.height);
+	};
+	Canvas.prototype.Fill = function(color) { return this.$val.Fill(color); };
+	Canvas.ptr.prototype.SetWidth = function(width) {
+		var $ptr, c, width;
+		c = this;
+		c.canvas.width = width;
+	};
+	Canvas.prototype.SetWidth = function(width) { return this.$val.SetWidth(width); };
+	Canvas.ptr.prototype.SetHeight = function(height) {
+		var $ptr, c, height;
+		c = this;
+		c.canvas.height = height;
+	};
+	Canvas.prototype.SetHeight = function(height) { return this.$val.SetHeight(height); };
+	Canvas.ptr.prototype.Width = function() {
+		var $ptr, c;
+		c = this;
+		return $parseInt(c.canvas.width) >> 0;
+	};
+	Canvas.prototype.Width = function() { return this.$val.Width(); };
+	Canvas.ptr.prototype.Height = function() {
+		var $ptr, c;
+		c = this;
+		return $parseInt(c.canvas.height) >> 0;
+	};
+	Canvas.prototype.Height = function() { return this.$val.Height(); };
 	Ready = function() {
 		var $ptr, _r, _r$1, ch, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; ch = $f.ch; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -18794,7 +18848,6 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 			_r$2 = _r$1.Get(new sliceType([new $Int(0)])); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
 			$r = SetCanvas(_r$2); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			$r = log.Println(new sliceType([new $String("gogame ready")])); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-			console.log(canvas);
 			$r = $send(ch[0], new structType.ptr()); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			$close(ch[0]);
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f._r$2 = _r$2; $f.$s = $s; $f.$r = $r; return $f;
@@ -18804,34 +18857,29 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 		/* */ } return; } if ($f === undefined) { $f = { $blk: Ready }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.ch = ch; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.Ready = Ready;
-	SetCanvas = function(newCanvas) {
-		var $ptr, newCanvas;
-		canvas = newCanvas;
-		ctx = canvas.getContext($externalize("2d", $String));
+	SetCanvas = function(c) {
+		var $ptr, c;
+		canvas = newCanvas(c);
 	};
 	$pkg.SetCanvas = SetCanvas;
-	Canvas = function() {
+	GetCanvas = function() {
 		var $ptr;
 		return canvas;
 	};
-	$pkg.Canvas = Canvas;
-	SetCanvasResolution = function(width, height) {
-		var $ptr, height, width;
-		canvas.width = width;
-		canvas.height = height;
+	$pkg.GetCanvas = GetCanvas;
+	SetFullscreen = function(fullscreen) {
+		var $ptr, fullscreen;
+		canvas.canvas.webkitRequestFullScreen();
 	};
-	$pkg.SetCanvasResolution = SetCanvasResolution;
-	FillCanvas = function(color) {
-		var $ptr, color;
-		ctx.fillStyle = $externalize(color, Color);
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
-	};
-	$pkg.FillCanvas = FillCanvas;
+	$pkg.SetFullscreen = SetFullscreen;
 	Log = function(args) {
 		var $ptr, args;
 		console.log($externalize(args, sliceType));
 	};
 	$pkg.Log = Log;
+	ptrType.methods = [{prop: "Blit", name: "Blit", pkg: "", typ: $funcType([Surface, $Int, $Int], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([Color], [], false)}, {prop: "SetWidth", name: "SetWidth", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "SetHeight", name: "SetHeight", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Int], false)}];
+	Canvas.init([{prop: "canvas", name: "canvas", pkg: "github.com/Bredgren/gogame", typ: ptrType$1, tag: ""}, {prop: "ctx", name: "ctx", pkg: "github.com/Bredgren/gogame", typ: ptrType$1, tag: ""}]);
+	Surface.init([{prop: "Blit", name: "Blit", pkg: "", typ: $funcType([Surface, $Int, $Int], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([Color], [], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Int], false)}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -18840,8 +18888,7 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 		$r = jquery.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = log.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = math.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		canvas = null;
-		ctx = null;
+		canvas = ptrType.nil;
 		jq = jquery.NewJQuery;
 		console = $global.console;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
@@ -18874,19 +18921,22 @@ $packages["main"] = (function() {
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._r = _r; $f.ready = ready; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	initGG = function() {
-		var $ptr, _tmp, _tmp$1, height, width;
+		var $ptr, _tmp, _tmp$1, canvas, height, width;
 		_tmp = 900;
 		_tmp$1 = 600;
 		width = _tmp;
 		height = _tmp$1;
-		gogame.SetCanvasResolution(width, height);
-		gogame.FillCanvas("rgba(0, 0, 0, 1.0)");
+		canvas = gogame.GetCanvas();
+		canvas.SetWidth(width);
+		canvas.SetHeight(height);
+		canvas.Fill("rgba(0, 0, 0, 1.0)");
 	};
 	start = function() {
 		var $ptr, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = log.Println(new sliceType([new $String("start")])); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		gogame.Log(new sliceType([new $jsObjectPtr(gogame.Canvas())]));
+		gogame.Log(new sliceType([gogame.GetCanvas()]));
+		gogame.SetFullscreen(true);
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: start }; } $f.$ptr = $ptr; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$init = function() {

@@ -20,12 +20,13 @@ func main() {
 
 func initGG() {
 	width, height := 900, 600
-	//gogame.SetCanvasSize(width, height)
-	gogame.SetCanvasResolution(width, height)
-	gogame.FillCanvas(gogame.Black)
+	canvas := gogame.GetCanvas()
+	canvas.SetWidth(width)
+	canvas.SetHeight(height)
+	canvas.Fill(gogame.Black)
 }
 
 func start() {
 	log.Println("start")
-	gogame.Log(gogame.Canvas())
+	gogame.Log(gogame.GetCanvas())
 }
