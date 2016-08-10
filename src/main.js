@@ -18842,7 +18842,7 @@ $packages["log"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/Bredgren/gogame"] = (function() {
-	var $pkg = {}, $init, fmt, js, jquery, log, math, Color, Display, Rect, Surface, surface, ptrType, sliceType, structType, funcType, sliceType$1, ptrType$1, ptrType$2, sliceType$2, ptrType$3, ptrType$4, jq, console, display, clampToInt, clampToFloat, newDisplay, Ready, SetDisplayCanvas, GetDisplay, maxInt, minInt, clampInt;
+	var $pkg = {}, $init, fmt, js, jquery, log, math, Color, Display, Rect, Surface, surface, ptrType, sliceType, structType, funcType, sliceType$1, ptrType$1, ptrType$2, sliceType$2, ptrType$3, ptrType$4, jq, console, display, clampToInt, clampToFloat, newDisplay, Ready, SetDisplayCanvas, GetDisplay, clamp;
 	fmt = $packages["fmt"];
 	js = $packages["github.com/gopherjs/gopherjs/js"];
 	jquery = $packages["github.com/gopherjs/jquery"];
@@ -18930,18 +18930,13 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 		d.surface.ctx = canvas.getContext($externalize("2d", $String));
 		return d;
 	};
-	Display.ptr.prototype.SetWidth = function(width) {
-		var $ptr, c, width;
+	Display.ptr.prototype.SetMode = function(width, height) {
+		var $ptr, c, height, width;
 		c = this;
 		c.surface.canvas.width = width;
-	};
-	Display.prototype.SetWidth = function(width) { return this.$val.SetWidth(width); };
-	Display.ptr.prototype.SetHeight = function(height) {
-		var $ptr, c, height;
-		c = this;
 		c.surface.canvas.height = height;
 	};
-	Display.prototype.SetHeight = function(height) { return this.$val.SetHeight(height); };
+	Display.prototype.SetMode = function(width, height) { return this.$val.SetMode(width, height); };
 	Ready = function() {
 		var $ptr, _r, _r$1, ch, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; ch = $f.ch; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -18991,13 +18986,13 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 	Rect.ptr.prototype.Bottom = function() {
 		var $ptr, r;
 		r = this;
-		return r.Y + r.H >> 0;
+		return r.Y + r.H;
 	};
 	Rect.prototype.Bottom = function() { return this.$val.Bottom(); };
 	Rect.ptr.prototype.SetBottom = function(bottom) {
 		var $ptr, bottom, r;
 		r = this;
-		r.Y = bottom - r.H >> 0;
+		r.Y = bottom - r.H;
 	};
 	Rect.prototype.SetBottom = function(bottom) { return this.$val.SetBottom(bottom); };
 	Rect.ptr.prototype.Left = function() {
@@ -19015,13 +19010,13 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 	Rect.ptr.prototype.Right = function() {
 		var $ptr, r;
 		r = this;
-		return r.X + r.W >> 0;
+		return r.X + r.W;
 	};
 	Rect.prototype.Right = function() { return this.$val.Right(); };
 	Rect.ptr.prototype.SetRight = function(right) {
 		var $ptr, r, right;
 		r = this;
-		r.X = right - r.W >> 0;
+		r.X = right - r.W;
 	};
 	Rect.prototype.SetRight = function(right) { return this.$val.SetRight(right); };
 	Rect.ptr.prototype.Width = function() {
@@ -19239,27 +19234,27 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 	};
 	Rect.prototype.SetCenter = function(x, y) { return this.$val.SetCenter(x, y); };
 	Rect.ptr.prototype.CenterX = function() {
-		var $ptr, _q, r;
+		var $ptr, r;
 		r = this;
-		return r.X + (_q = r.W / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+		return r.X + r.W / 2;
 	};
 	Rect.prototype.CenterX = function() { return this.$val.CenterX(); };
 	Rect.ptr.prototype.SetCenterX = function(x) {
-		var $ptr, _q, r, x;
+		var $ptr, r, x;
 		r = this;
-		r.X = x - (_q = r.W / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+		r.X = x - r.W / 2;
 	};
 	Rect.prototype.SetCenterX = function(x) { return this.$val.SetCenterX(x); };
 	Rect.ptr.prototype.CenterY = function() {
-		var $ptr, _q, r;
+		var $ptr, r;
 		r = this;
-		return r.Y + (_q = r.H / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+		return r.Y + r.H / 2;
 	};
 	Rect.prototype.CenterY = function() { return this.$val.CenterY(); };
 	Rect.ptr.prototype.SetCenterY = function(y) {
-		var $ptr, _q, r, y;
+		var $ptr, r, y;
 		r = this;
-		r.Y = y - (_q = r.H / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+		r.Y = y - r.H / 2;
 	};
 	Rect.prototype.SetCenterY = function(y) { return this.$val.SetCenterY(y); };
 	Rect.ptr.prototype.Copy = function() {
@@ -19271,47 +19266,47 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 	Rect.ptr.prototype.Move = function(dx, dy) {
 		var $ptr, dx, dy, r;
 		r = this;
-		return new Rect.ptr(r.X + dx >> 0, r.Y + dy >> 0, r.W, r.H);
+		return new Rect.ptr(r.X + dx, r.Y + dy, r.W, r.H);
 	};
 	Rect.prototype.Move = function(dx, dy) { return this.$val.Move(dx, dy); };
 	Rect.ptr.prototype.MoveIP = function(dx, dy) {
 		var $ptr, dx, dy, r;
 		r = this;
-		r.X = r.X + (dx) >> 0;
-		r.Y = r.Y + (dy) >> 0;
+		r.X = r.X + (dx);
+		r.Y = r.Y + (dy);
 	};
 	Rect.prototype.MoveIP = function(dx, dy) { return this.$val.MoveIP(dx, dy); };
 	Rect.ptr.prototype.Inflate = function(dw, dh) {
-		var $ptr, _q, _q$1, dh, dw, r;
+		var $ptr, dh, dw, r;
 		r = this;
-		return new Rect.ptr(r.X - (_q = dw / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0, r.Y - (_q$1 = dh / 2, (_q$1 === _q$1 && _q$1 !== 1/0 && _q$1 !== -1/0) ? _q$1 >> 0 : $throwRuntimeError("integer divide by zero")) >> 0, r.W + dw >> 0, r.H + dh >> 0);
+		return new Rect.ptr(r.X - dw / 2, r.Y - dh / 2, r.W + dw, r.H + dh);
 	};
 	Rect.prototype.Inflate = function(dw, dh) { return this.$val.Inflate(dw, dh); };
 	Rect.ptr.prototype.InflateIP = function(dw, dh) {
-		var $ptr, _q, _q$1, dh, dw, r;
+		var $ptr, dh, dw, r;
 		r = this;
-		r.X = r.X - ((_q = dw / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero"))) >> 0;
-		r.Y = r.Y - ((_q$1 = dh / 2, (_q$1 === _q$1 && _q$1 !== 1/0 && _q$1 !== -1/0) ? _q$1 >> 0 : $throwRuntimeError("integer divide by zero"))) >> 0;
-		r.W = r.W + (dw) >> 0;
-		r.H = r.H + (dh) >> 0;
+		r.X = r.X - (dw / 2);
+		r.Y = r.Y - (dh / 2);
+		r.W = r.W + (dw);
+		r.H = r.H + (dh);
 	};
 	Rect.prototype.InflateIP = function(dw, dh) { return this.$val.InflateIP(dw, dh); };
 	Rect.ptr.prototype.Clamp = function(bounds) {
-		var $ptr, _q, _q$1, _tmp, _tmp$1, bounds, newX, newY, r;
+		var $ptr, _tmp, _tmp$1, bounds, newX, newY, r;
 		r = this;
 		_tmp = 0;
 		_tmp$1 = 0;
 		newX = _tmp;
 		newY = _tmp$1;
 		if (r.W > bounds.W) {
-			newX = bounds.CenterX() - (_q = r.W / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+			newX = bounds.CenterX() - r.W / 2;
 		} else {
-			newX = clampInt(r.X, bounds.X, bounds.Right() - r.W >> 0);
+			newX = clamp(r.X, bounds.X, bounds.Right() - r.W);
 		}
 		if (r.H > bounds.H) {
-			newY = bounds.CenterY() - (_q$1 = r.H / 2, (_q$1 === _q$1 && _q$1 !== 1/0 && _q$1 !== -1/0) ? _q$1 >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+			newY = bounds.CenterY() - r.H / 2;
 		} else {
-			newY = clampInt(r.Y, bounds.Y, bounds.Bottom() - r.H >> 0);
+			newY = clamp(r.Y, bounds.Y, bounds.Bottom() - r.H);
 		}
 		return new Rect.ptr(newX, newY, r.W, r.H);
 	};
@@ -19322,38 +19317,38 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 		if (r.W > bounds.W) {
 			r.SetCenterX(bounds.CenterX());
 		} else {
-			r.X = clampInt(r.X, bounds.X, bounds.Right() - r.W >> 0);
+			r.X = clamp(r.X, bounds.X, bounds.Right() - r.W);
 		}
 		if (r.H > bounds.H) {
 			r.SetCenterY(bounds.CenterY());
 		} else {
-			r.Y = clampInt(r.Y, bounds.Y, bounds.Bottom() - r.H >> 0);
+			r.Y = clamp(r.Y, bounds.Y, bounds.Bottom() - r.H);
 		}
 	};
 	Rect.prototype.ClampIP = function(bounds) { return this.$val.ClampIP(bounds); };
 	Rect.ptr.prototype.Intersect = function(other) {
 		var $ptr, newX, newY, other, r;
 		r = this;
-		newX = maxInt(r.X, other.X);
-		newY = maxInt(r.Y, other.Y);
-		return new Rect.ptr(newX, newY, minInt(r.Right(), other.Right()) - newX >> 0, minInt(r.Bottom(), other.Bottom()) - newY >> 0);
+		newX = math.Max(r.X, other.X);
+		newY = math.Max(r.Y, other.Y);
+		return new Rect.ptr(newX, newY, math.Min(r.Right(), other.Right()) - newX, math.Min(r.Bottom(), other.Bottom()) - newY);
 	};
 	Rect.prototype.Intersect = function(other) { return this.$val.Intersect(other); };
 	Rect.ptr.prototype.Union = function(other) {
 		var $ptr, newX, newY, other, r;
 		r = this;
-		newX = minInt(r.X, other.X);
-		newY = minInt(r.Y, other.Y);
-		return new Rect.ptr(newX, newY, maxInt(r.Right(), other.Right()) - newX >> 0, maxInt(r.Bottom(), other.Bottom()) - newY >> 0);
+		newX = math.Min(r.X, other.X);
+		newY = math.Min(r.Y, other.Y);
+		return new Rect.ptr(newX, newY, math.Max(r.Right(), other.Right()) - newX, math.Max(r.Bottom(), other.Bottom()) - newY);
 	};
 	Rect.prototype.Union = function(other) { return this.$val.Union(other); };
 	Rect.ptr.prototype.UnionIP = function(other) {
 		var $ptr, newX, newY, other, r;
 		r = this;
-		newX = minInt(r.X, other.X);
-		newY = minInt(r.Y, other.Y);
-		r.W = maxInt(r.Right(), other.Right()) - newX >> 0;
-		r.H = maxInt(r.Bottom(), other.Bottom()) - newY >> 0;
+		newX = math.Min(r.X, other.X);
+		newY = math.Min(r.Y, other.Y);
+		r.W = math.Max(r.Right(), other.Right()) - newX;
+		r.H = math.Max(r.Bottom(), other.Bottom()) - newY;
 		r.X = newX;
 		r.Y = newY;
 	};
@@ -19370,8 +19365,8 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 		while (true) {
 			if (!(_i < _ref.$length)) { break; }
 			other = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
-			newX = minInt(newX, other.X);
-			newY = minInt(newY, other.Y);
+			newX = math.Min(newX, other.X);
+			newY = math.Min(newY, other.Y);
 			_i++;
 		}
 		_tmp$2 = r.Right();
@@ -19383,33 +19378,33 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 		while (true) {
 			if (!(_i$1 < _ref$1.$length)) { break; }
 			other$1 = ((_i$1 < 0 || _i$1 >= _ref$1.$length) ? $throwRuntimeError("index out of range") : _ref$1.$array[_ref$1.$offset + _i$1]);
-			farRight = maxInt(farRight, other$1.Right());
-			farBottom = minInt(farBottom, other$1.Bottom());
+			farRight = math.Max(farRight, other$1.Right());
+			farBottom = math.Max(farBottom, other$1.Bottom());
 			_i$1++;
 		}
-		return new Rect.ptr(newX, newY, farRight - newX >> 0, farBottom - newY >> 0);
+		return new Rect.ptr(newX, newY, farRight - newX, farBottom - newY);
 	};
 	Rect.prototype.UnionAll = function(others) { return this.$val.UnionAll(others); };
 	Rect.ptr.prototype.Fit = function(bounds) {
-		var $ptr, _q, _q$1, bounds, newH, newW, r;
+		var $ptr, bounds, newH, newW, r;
 		r = this;
-		newW = $imul(bounds.H, ((_q = r.W / r.H, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero"))));
+		newW = bounds.H * (r.W / r.H);
 		if (newW <= bounds.W) {
-			return new Rect.ptr(clampInt(r.X, bounds.X, bounds.Right() - newW >> 0), bounds.Y, newW, bounds.H);
+			return new Rect.ptr(clamp(r.X, bounds.X, bounds.Right() - newW), bounds.Y, newW, bounds.H);
 		}
-		newH = $imul(bounds.W, ((_q$1 = r.H / r.W, (_q$1 === _q$1 && _q$1 !== 1/0 && _q$1 !== -1/0) ? _q$1 >> 0 : $throwRuntimeError("integer divide by zero"))));
-		return new Rect.ptr(bounds.X, clampInt(r.Y, bounds.Y, bounds.Bottom() - newH >> 0), bounds.W, newH);
+		newH = bounds.W * (r.H / r.W);
+		return new Rect.ptr(bounds.X, clamp(r.Y, bounds.Y, bounds.Bottom() - newH), bounds.W, newH);
 	};
 	Rect.prototype.Fit = function(bounds) { return this.$val.Fit(bounds); };
 	Rect.ptr.prototype.Normalize = function() {
 		var $ptr, r;
 		r = this;
 		if (r.W < 0) {
-			r.X = r.X + (r.W) >> 0;
+			r.X = r.X + (r.W);
 			r.W = -r.W;
 		}
 		if (r.H < 0) {
-			r.Y = r.Y + (r.H) >> 0;
+			r.Y = r.Y + (r.H);
 			r.H = -r.H;
 		}
 	};
@@ -19467,23 +19462,9 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 		return list;
 	};
 	Rect.prototype.CollideListAll = function(others) { return this.$val.CollideListAll(others); };
-	maxInt = function(a, b) {
-		var $ptr, a, b;
-		if (a > b) {
-			return a;
-		}
-		return b;
-	};
-	minInt = function(a, b) {
-		var $ptr, a, b;
-		if (a < b) {
-			return a;
-		}
-		return b;
-	};
-	clampInt = function(i, min, max) {
+	clamp = function(i, min, max) {
 		var $ptr, i, max, min;
-		return maxInt(minInt(i, max), min);
+		return math.Max(math.Min(i, max), min);
 	};
 	surface.ptr.prototype.GetCanvas = function() {
 		var $ptr, s;
@@ -19523,13 +19504,13 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 	surface.ptr.prototype.Width = function() {
 		var $ptr, s;
 		s = this;
-		return $parseFloat(s.canvas.width);
+		return $parseInt(s.canvas.width) >> 0;
 	};
 	surface.prototype.Width = function() { return this.$val.Width(); };
 	surface.ptr.prototype.Height = function() {
 		var $ptr, s;
 		s = this;
-		return $parseFloat(s.canvas.height);
+		return $parseInt(s.canvas.height) >> 0;
 	};
 	surface.prototype.Height = function() { return this.$val.Height(); };
 	surface.ptr.prototype.DrawRect = function(r, c, width) {
@@ -19558,13 +19539,13 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 	};
 	surface.prototype.DrawRect = function(r, c, width) { return this.$val.DrawRect(r, c, width); };
 	ptrType$1.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}];
-	ptrType.methods = [{prop: "SetWidth", name: "SetWidth", pkg: "", typ: $funcType([$Float64], [], false)}, {prop: "SetHeight", name: "SetHeight", pkg: "", typ: $funcType([$Float64], [], false)}];
-	ptrType$2.methods = [{prop: "Top", name: "Top", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetTop", name: "SetTop", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Bottom", name: "Bottom", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetBottom", name: "SetBottom", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Left", name: "Left", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetLeft", name: "SetLeft", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Right", name: "Right", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetRight", name: "SetRight", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetWidth", name: "SetWidth", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetHeight", name: "SetHeight", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Size", name: "Size", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetSize", name: "SetSize", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "TopLeft", name: "TopLeft", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetTopLeft", name: "SetTopLeft", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "BottomLeft", name: "BottomLeft", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetBottomLeft", name: "SetBottomLeft", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "TopRight", name: "TopRight", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetTopRight", name: "SetTopRight", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "BottomRight", name: "BottomRight", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetBottomRight", name: "SetBottomRight", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MidTop", name: "MidTop", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetMidTop", name: "SetMidTop", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MidBottom", name: "MidBottom", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetMidBottom", name: "SetMidBottom", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MidLeft", name: "MidLeft", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetMidLeft", name: "SetMidLeft", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MidRight", name: "MidRight", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetMidRight", name: "SetMidRight", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Center", name: "Center", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetCenter", name: "SetCenter", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "CenterX", name: "CenterX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetCenterX", name: "SetCenterX", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "CenterY", name: "CenterY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetCenterY", name: "SetCenterY", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Copy", name: "Copy", pkg: "", typ: $funcType([], [Rect], false)}, {prop: "Move", name: "Move", pkg: "", typ: $funcType([$Int, $Int], [Rect], false)}, {prop: "MoveIP", name: "MoveIP", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Inflate", name: "Inflate", pkg: "", typ: $funcType([$Int, $Int], [Rect], false)}, {prop: "InflateIP", name: "InflateIP", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Clamp", name: "Clamp", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "ClampIP", name: "ClampIP", pkg: "", typ: $funcType([ptrType$2], [], false)}, {prop: "Intersect", name: "Intersect", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "Union", name: "Union", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "UnionIP", name: "UnionIP", pkg: "", typ: $funcType([ptrType$2], [], false)}, {prop: "UnionAll", name: "UnionAll", pkg: "", typ: $funcType([sliceType$2], [Rect], false)}, {prop: "Fit", name: "Fit", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([ptrType$2], [$Bool], false)}, {prop: "CollidePoint", name: "CollidePoint", pkg: "", typ: $funcType([$Int, $Int], [$Bool], false)}, {prop: "CollideRect", name: "CollideRect", pkg: "", typ: $funcType([ptrType$2], [$Bool], false)}, {prop: "CollideList", name: "CollideList", pkg: "", typ: $funcType([sliceType$2], [$Int], false)}, {prop: "CollideListAll", name: "CollideListAll", pkg: "", typ: $funcType([sliceType$2], [sliceType$1], false)}];
-	ptrType$4.methods = [{prop: "GetCanvas", name: "GetCanvas", pkg: "", typ: $funcType([], [ptrType$3], false)}, {prop: "Blit", name: "Blit", pkg: "", typ: $funcType([Surface, $Float64, $Float64], [], false)}, {prop: "BlitArea", name: "BlitArea", pkg: "", typ: $funcType([Surface, ptrType$2, $Float64, $Float64], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([Color], [], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "DrawRect", name: "DrawRect", pkg: "", typ: $funcType([ptrType$2, Color, $Float64], [], false)}];
+	ptrType.methods = [{prop: "SetMode", name: "SetMode", pkg: "", typ: $funcType([$Int, $Int], [], false)}];
+	ptrType$2.methods = [{prop: "Top", name: "Top", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "SetTop", name: "SetTop", pkg: "", typ: $funcType([$Float64], [], false)}, {prop: "Bottom", name: "Bottom", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "SetBottom", name: "SetBottom", pkg: "", typ: $funcType([$Float64], [], false)}, {prop: "Left", name: "Left", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "SetLeft", name: "SetLeft", pkg: "", typ: $funcType([$Float64], [], false)}, {prop: "Right", name: "Right", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "SetRight", name: "SetRight", pkg: "", typ: $funcType([$Float64], [], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "SetWidth", name: "SetWidth", pkg: "", typ: $funcType([$Float64], [], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "SetHeight", name: "SetHeight", pkg: "", typ: $funcType([$Float64], [], false)}, {prop: "Size", name: "Size", pkg: "", typ: $funcType([], [$Float64, $Float64], false)}, {prop: "SetSize", name: "SetSize", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "TopLeft", name: "TopLeft", pkg: "", typ: $funcType([], [$Float64, $Float64], false)}, {prop: "SetTopLeft", name: "SetTopLeft", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "BottomLeft", name: "BottomLeft", pkg: "", typ: $funcType([], [$Float64, $Float64], false)}, {prop: "SetBottomLeft", name: "SetBottomLeft", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "TopRight", name: "TopRight", pkg: "", typ: $funcType([], [$Float64, $Float64], false)}, {prop: "SetTopRight", name: "SetTopRight", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "BottomRight", name: "BottomRight", pkg: "", typ: $funcType([], [$Float64, $Float64], false)}, {prop: "SetBottomRight", name: "SetBottomRight", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "MidTop", name: "MidTop", pkg: "", typ: $funcType([], [$Float64, $Float64], false)}, {prop: "SetMidTop", name: "SetMidTop", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "MidBottom", name: "MidBottom", pkg: "", typ: $funcType([], [$Float64, $Float64], false)}, {prop: "SetMidBottom", name: "SetMidBottom", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "MidLeft", name: "MidLeft", pkg: "", typ: $funcType([], [$Float64, $Float64], false)}, {prop: "SetMidLeft", name: "SetMidLeft", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "MidRight", name: "MidRight", pkg: "", typ: $funcType([], [$Float64, $Float64], false)}, {prop: "SetMidRight", name: "SetMidRight", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "Center", name: "Center", pkg: "", typ: $funcType([], [$Float64, $Float64], false)}, {prop: "SetCenter", name: "SetCenter", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "CenterX", name: "CenterX", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "SetCenterX", name: "SetCenterX", pkg: "", typ: $funcType([$Float64], [], false)}, {prop: "CenterY", name: "CenterY", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "SetCenterY", name: "SetCenterY", pkg: "", typ: $funcType([$Float64], [], false)}, {prop: "Copy", name: "Copy", pkg: "", typ: $funcType([], [Rect], false)}, {prop: "Move", name: "Move", pkg: "", typ: $funcType([$Float64, $Float64], [Rect], false)}, {prop: "MoveIP", name: "MoveIP", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "Inflate", name: "Inflate", pkg: "", typ: $funcType([$Float64, $Float64], [Rect], false)}, {prop: "InflateIP", name: "InflateIP", pkg: "", typ: $funcType([$Float64, $Float64], [], false)}, {prop: "Clamp", name: "Clamp", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "ClampIP", name: "ClampIP", pkg: "", typ: $funcType([ptrType$2], [], false)}, {prop: "Intersect", name: "Intersect", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "Union", name: "Union", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "UnionIP", name: "UnionIP", pkg: "", typ: $funcType([ptrType$2], [], false)}, {prop: "UnionAll", name: "UnionAll", pkg: "", typ: $funcType([sliceType$2], [Rect], false)}, {prop: "Fit", name: "Fit", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([ptrType$2], [$Bool], false)}, {prop: "CollidePoint", name: "CollidePoint", pkg: "", typ: $funcType([$Float64, $Float64], [$Bool], false)}, {prop: "CollideRect", name: "CollideRect", pkg: "", typ: $funcType([ptrType$2], [$Bool], false)}, {prop: "CollideList", name: "CollideList", pkg: "", typ: $funcType([sliceType$2], [$Int], false)}, {prop: "CollideListAll", name: "CollideListAll", pkg: "", typ: $funcType([sliceType$2], [sliceType$1], false)}];
+	ptrType$4.methods = [{prop: "GetCanvas", name: "GetCanvas", pkg: "", typ: $funcType([], [ptrType$3], false)}, {prop: "Blit", name: "Blit", pkg: "", typ: $funcType([Surface, $Float64, $Float64], [], false)}, {prop: "BlitArea", name: "BlitArea", pkg: "", typ: $funcType([Surface, ptrType$2, $Float64, $Float64], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([Color], [], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "DrawRect", name: "DrawRect", pkg: "", typ: $funcType([ptrType$2, Color, $Float64], [], false)}];
 	Color.init([{prop: "R", name: "R", pkg: "", typ: $Float64, tag: ""}, {prop: "G", name: "G", pkg: "", typ: $Float64, tag: ""}, {prop: "B", name: "B", pkg: "", typ: $Float64, tag: ""}, {prop: "A", name: "A", pkg: "", typ: $Float64, tag: ""}]);
 	Display.init([{prop: "surface", name: "", pkg: "github.com/Bredgren/gogame", typ: surface, tag: ""}]);
-	Rect.init([{prop: "X", name: "X", pkg: "", typ: $Int, tag: ""}, {prop: "Y", name: "Y", pkg: "", typ: $Int, tag: ""}, {prop: "W", name: "W", pkg: "", typ: $Int, tag: ""}, {prop: "H", name: "H", pkg: "", typ: $Int, tag: ""}]);
-	Surface.init([{prop: "Blit", name: "Blit", pkg: "", typ: $funcType([Surface, $Float64, $Float64], [], false)}, {prop: "BlitArea", name: "BlitArea", pkg: "", typ: $funcType([Surface, ptrType$2, $Float64, $Float64], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([Color], [], false)}, {prop: "GetCanvas", name: "GetCanvas", pkg: "", typ: $funcType([], [ptrType$3], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Float64], false)}]);
+	Rect.init([{prop: "X", name: "X", pkg: "", typ: $Float64, tag: ""}, {prop: "Y", name: "Y", pkg: "", typ: $Float64, tag: ""}, {prop: "W", name: "W", pkg: "", typ: $Float64, tag: ""}, {prop: "H", name: "H", pkg: "", typ: $Float64, tag: ""}]);
+	Surface.init([{prop: "Blit", name: "Blit", pkg: "", typ: $funcType([Surface, $Float64, $Float64], [], false)}, {prop: "BlitArea", name: "BlitArea", pkg: "", typ: $funcType([Surface, ptrType$2, $Float64, $Float64], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([Color], [], false)}, {prop: "GetCanvas", name: "GetCanvas", pkg: "", typ: $funcType([], [ptrType$3], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Int], false)}]);
 	surface.init([{prop: "canvas", name: "canvas", pkg: "github.com/Bredgren/gogame", typ: ptrType$3, tag: ""}, {prop: "ctx", name: "ctx", pkg: "github.com/Bredgren/gogame", typ: ptrType$3, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
@@ -19616,8 +19597,7 @@ $packages["main"] = (function() {
 		width = _tmp;
 		height = _tmp$1;
 		canvas = gogame.GetDisplay();
-		canvas.SetWidth(width);
-		canvas.SetHeight(height);
+		canvas.SetMode(width, height);
 		$r = canvas.surface.Fill(gogame.Black); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: initGG }; } $f.$ptr = $ptr; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f.canvas = canvas; $f.height = height; $f.width = width; $f.$s = $s; $f.$r = $r; return $f;
 	};

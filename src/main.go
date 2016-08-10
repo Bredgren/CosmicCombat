@@ -19,10 +19,9 @@ func main() {
 }
 
 func initGG() {
-	width, height := 900.0, 600.0
+	width, height := 900, 600
 	canvas := gogame.GetDisplay()
-	canvas.SetWidth(width)
-	canvas.SetHeight(height)
+	canvas.SetMode(width, height)
 	canvas.Fill(gogame.Black)
 }
 
