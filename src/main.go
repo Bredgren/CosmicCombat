@@ -19,8 +19,8 @@ func main() {
 }
 
 func initGG() {
-	width, height := 900, 600
-	canvas := gogame.GetCanvas()
+	width, height := 900.0, 600.0
+	canvas := gogame.GetDisplay()
 	canvas.SetWidth(width)
 	canvas.SetHeight(height)
 	canvas.Fill(gogame.Black)
@@ -28,5 +28,6 @@ func initGG() {
 
 func start() {
 	log.Println("start")
-	gogame.Log(gogame.GetCanvas())
+	gogame.GetDisplay().DrawRect(&gogame.Rect{X: 10, Y: 10, W: 50, H: 50}, gogame.White, 0)
+	gogame.GetDisplay().DrawRect(&gogame.Rect{X: 70, Y: 11, W: 48, H: 48}, gogame.White, 4)
 }

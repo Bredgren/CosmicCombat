@@ -2764,13 +2764,22 @@ $packages["io"] = (function() {
 	return $pkg;
 })();
 $packages["math"] = (function() {
-	var $pkg = {}, $init, js, arrayType, arrayType$1, arrayType$2, structType, arrayType$3, math, zero, posInf, negInf, buf, pow10tab, IsInf, init, Float32bits, Float64bits, init$1;
+	var $pkg = {}, $init, js, arrayType, arrayType$1, arrayType$2, structType, arrayType$3, math, zero, posInf, negInf, nan, buf, pow10tab, Inf, IsInf, IsNaN, Max, Min, NaN, Signbit, init, Float32bits, Float64bits, max, min, init$1;
 	js = $packages["github.com/gopherjs/gopherjs/js"];
 	arrayType = $arrayType($Uint32, 2);
 	arrayType$1 = $arrayType($Float32, 2);
 	arrayType$2 = $arrayType($Float64, 1);
 	structType = $structType([{prop: "uint32array", name: "uint32array", pkg: "math", typ: arrayType, tag: ""}, {prop: "float32array", name: "float32array", pkg: "math", typ: arrayType$1, tag: ""}, {prop: "float64array", name: "float64array", pkg: "math", typ: arrayType$2, tag: ""}]);
 	arrayType$3 = $arrayType($Float64, 70);
+	Inf = function(sign) {
+		var $ptr, sign;
+		if (sign >= 0) {
+			return posInf;
+		} else {
+			return negInf;
+		}
+	};
+	$pkg.Inf = Inf;
 	IsInf = function(f, sign) {
 		var $ptr, f, sign;
 		if (f === posInf) {
@@ -2782,6 +2791,33 @@ $packages["math"] = (function() {
 		return false;
 	};
 	$pkg.IsInf = IsInf;
+	IsNaN = function(f) {
+		var $ptr, f, is;
+		is = false;
+		is = !((f === f));
+		return is;
+	};
+	$pkg.IsNaN = IsNaN;
+	Max = function(x, y) {
+		var $ptr, x, y;
+		return max(x, y);
+	};
+	$pkg.Max = Max;
+	Min = function(x, y) {
+		var $ptr, x, y;
+		return min(x, y);
+	};
+	$pkg.Min = Min;
+	NaN = function() {
+		var $ptr;
+		return nan;
+	};
+	$pkg.NaN = NaN;
+	Signbit = function(x) {
+		var $ptr, x;
+		return x < 0 || (1 / x === negInf);
+	};
+	$pkg.Signbit = Signbit;
 	init = function() {
 		var $ptr, ab;
 		ab = new ($global.ArrayBuffer)(8);
@@ -2801,6 +2837,40 @@ $packages["math"] = (function() {
 		return (x = $shiftLeft64(new $Uint64(0, buf.uint32array[1]), 32), x$1 = new $Uint64(0, buf.uint32array[0]), new $Uint64(x.$high + x$1.$high, x.$low + x$1.$low));
 	};
 	$pkg.Float64bits = Float64bits;
+	max = function(x, y) {
+		var $ptr, x, y;
+		if (IsInf(x, 1) || IsInf(y, 1)) {
+			return Inf(1);
+		} else if (IsNaN(x) || IsNaN(y)) {
+			return NaN();
+		} else if ((x === 0) && (x === y)) {
+			if (Signbit(x)) {
+				return y;
+			}
+			return x;
+		}
+		if (x > y) {
+			return x;
+		}
+		return y;
+	};
+	min = function(x, y) {
+		var $ptr, x, y;
+		if (IsInf(x, -1) || IsInf(y, -1)) {
+			return Inf(-1);
+		} else if (IsNaN(x) || IsNaN(y)) {
+			return NaN();
+		} else if ((x === 0) && (x === y)) {
+			if (Signbit(x)) {
+				return x;
+			}
+			return y;
+		}
+		if (x < y) {
+			return x;
+		}
+		return y;
+	};
 	init$1 = function() {
 		var $ptr, _q, i, m, x;
 		pow10tab[0] = 1;
@@ -2823,6 +2893,7 @@ $packages["math"] = (function() {
 		zero = 0;
 		posInf = 1 / zero;
 		negInf = -1 / zero;
+		nan = 0 / zero;
 		init();
 		init$1();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
@@ -18771,13 +18842,50 @@ $packages["log"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/Bredgren/gogame"] = (function() {
-	var $pkg = {}, $init, fmt, js, jquery, log, math, Canvas, Color, Surface, ptrType, sliceType, structType, funcType, ptrType$1, jq, console, canvas, newCanvas, Ready, SetCanvas, GetCanvas, SetFullscreen, Log;
+	var $pkg = {}, $init, fmt, js, jquery, log, math, Color, Display, Rect, Surface, surface, ptrType, sliceType, structType, funcType, sliceType$1, ptrType$1, ptrType$2, sliceType$2, ptrType$3, ptrType$4, jq, console, display, clampToInt, clampToFloat, newDisplay, Ready, SetDisplayCanvas, GetDisplay, maxInt, minInt, clampInt;
 	fmt = $packages["fmt"];
 	js = $packages["github.com/gopherjs/gopherjs/js"];
 	jquery = $packages["github.com/gopherjs/jquery"];
 	log = $packages["log"];
 	math = $packages["math"];
-	Canvas = $pkg.Canvas = $newType(0, $kindStruct, "gogame.Canvas", "Canvas", "github.com/Bredgren/gogame", function(canvas_, ctx_) {
+	Color = $pkg.Color = $newType(0, $kindStruct, "gogame.Color", "Color", "github.com/Bredgren/gogame", function(R_, G_, B_, A_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.R = 0;
+			this.G = 0;
+			this.B = 0;
+			this.A = 0;
+			return;
+		}
+		this.R = R_;
+		this.G = G_;
+		this.B = B_;
+		this.A = A_;
+	});
+	Display = $pkg.Display = $newType(0, $kindStruct, "gogame.Display", "Display", "github.com/Bredgren/gogame", function(surface_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.surface = new surface.ptr(null, null);
+			return;
+		}
+		this.surface = surface_;
+	});
+	Rect = $pkg.Rect = $newType(0, $kindStruct, "gogame.Rect", "Rect", "github.com/Bredgren/gogame", function(X_, Y_, W_, H_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.X = 0;
+			this.Y = 0;
+			this.W = 0;
+			this.H = 0;
+			return;
+		}
+		this.X = X_;
+		this.Y = Y_;
+		this.W = W_;
+		this.H = H_;
+	});
+	Surface = $pkg.Surface = $newType(8, $kindInterface, "gogame.Surface", "Surface", "github.com/Bredgren/gogame", null);
+	surface = $pkg.surface = $newType(0, $kindStruct, "gogame.surface", "surface", "github.com/Bredgren/gogame", function(canvas_, ctx_) {
 		this.$val = this;
 		if (arguments.length === 0) {
 			this.canvas = null;
@@ -18787,54 +18895,53 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 		this.canvas = canvas_;
 		this.ctx = ctx_;
 	});
-	Color = $pkg.Color = $newType(8, $kindString, "gogame.Color", "Color", "github.com/Bredgren/gogame", null);
-	Surface = $pkg.Surface = $newType(8, $kindInterface, "gogame.Surface", "Surface", "github.com/Bredgren/gogame", null);
-	ptrType = $ptrType(Canvas);
+	ptrType = $ptrType(Display);
 	sliceType = $sliceType($emptyInterface);
 	structType = $structType([]);
 	funcType = $funcType([], [], false);
-	ptrType$1 = $ptrType(js.Object);
-	newCanvas = function(canvas$1) {
-		var $ptr, canvas$1;
-		return new Canvas.ptr(canvas$1, canvas$1.getContext($externalize("2d", $String)));
-	};
-	Canvas.ptr.prototype.Blit = function(source, x, y) {
-		var $ptr, c, source, x, y;
+	sliceType$1 = $sliceType($Int);
+	ptrType$1 = $ptrType(Color);
+	ptrType$2 = $ptrType(Rect);
+	sliceType$2 = $sliceType(ptrType$2);
+	ptrType$3 = $ptrType(js.Object);
+	ptrType$4 = $ptrType(surface);
+	Color.ptr.prototype.String = function() {
+		var $ptr, _r, c, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; c = $f.c; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		c = this;
-		return;
+		_r = fmt.Sprintf("rgba(%d, %d, %d, %f)", new sliceType([new $Int(clampToInt(255 * c.R, 0, 255)), new $Int(clampToInt(255 * c.G, 0, 255)), new $Int(clampToInt(255 * c.B, 0, 255)), new $Float64(clampToFloat(c.A, 0, 1))])); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		/* */ $s = 2; case 2:
+		return _r;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: Color.ptr.prototype.String }; } $f.$ptr = $ptr; $f._r = _r; $f.c = c; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	Canvas.prototype.Blit = function(source, x, y) { return this.$val.Blit(source, x, y); };
-	Canvas.ptr.prototype.Fill = function(color) {
-		var $ptr, c, color;
-		c = this;
-		c.ctx.fillStyle = $externalize(color, Color);
-		c.ctx.fillRect(0, 0, c.canvas.width, c.canvas.height);
+	Color.prototype.String = function() { return this.$val.String(); };
+	clampToInt = function(v, min, max) {
+		var $ptr, max, min, v;
+		return (math.Min(math.Max(v, min), max) >> 0);
 	};
-	Canvas.prototype.Fill = function(color) { return this.$val.Fill(color); };
-	Canvas.ptr.prototype.SetWidth = function(width) {
+	clampToFloat = function(v, min, max) {
+		var $ptr, max, min, v;
+		return math.Min(math.Max(v, min), max);
+	};
+	newDisplay = function(canvas) {
+		var $ptr, canvas, d;
+		d = new Display.ptr(new surface.ptr(null, null));
+		d.surface.canvas = canvas;
+		d.surface.ctx = canvas.getContext($externalize("2d", $String));
+		return d;
+	};
+	Display.ptr.prototype.SetWidth = function(width) {
 		var $ptr, c, width;
 		c = this;
-		c.canvas.width = width;
+		c.surface.canvas.width = width;
 	};
-	Canvas.prototype.SetWidth = function(width) { return this.$val.SetWidth(width); };
-	Canvas.ptr.prototype.SetHeight = function(height) {
+	Display.prototype.SetWidth = function(width) { return this.$val.SetWidth(width); };
+	Display.ptr.prototype.SetHeight = function(height) {
 		var $ptr, c, height;
 		c = this;
-		c.canvas.height = height;
+		c.surface.canvas.height = height;
 	};
-	Canvas.prototype.SetHeight = function(height) { return this.$val.SetHeight(height); };
-	Canvas.ptr.prototype.Width = function() {
-		var $ptr, c;
-		c = this;
-		return $parseInt(c.canvas.width) >> 0;
-	};
-	Canvas.prototype.Width = function() { return this.$val.Width(); };
-	Canvas.ptr.prototype.Height = function() {
-		var $ptr, c;
-		c = this;
-		return $parseInt(c.canvas.height) >> 0;
-	};
-	Canvas.prototype.Height = function() { return this.$val.Height(); };
+	Display.prototype.SetHeight = function(height) { return this.$val.SetHeight(height); };
 	Ready = function() {
 		var $ptr, _r, _r$1, ch, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; ch = $f.ch; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -18846,7 +18953,7 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; _r$2 = $f._r$2; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 			_r$1 = jq(new sliceType([new $String("canvas")])); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 			_r$2 = _r$1.Get(new sliceType([new $Int(0)])); /* */ $s = 2; case 2: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
-			$r = SetCanvas(_r$2); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = SetDisplayCanvas(_r$2); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			$r = log.Println(new sliceType([new $String("gogame ready")])); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			$r = $send(ch[0], new structType.ptr()); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			$close(ch[0]);
@@ -18857,29 +18964,608 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 		/* */ } return; } if ($f === undefined) { $f = { $blk: Ready }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.ch = ch; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.Ready = Ready;
-	SetCanvas = function(c) {
+	SetDisplayCanvas = function(c) {
 		var $ptr, c;
-		canvas = newCanvas(c);
+		display = newDisplay(c);
 	};
-	$pkg.SetCanvas = SetCanvas;
-	GetCanvas = function() {
+	$pkg.SetDisplayCanvas = SetDisplayCanvas;
+	GetDisplay = function() {
 		var $ptr;
-		return canvas;
+		return display;
 	};
-	$pkg.GetCanvas = GetCanvas;
-	SetFullscreen = function(fullscreen) {
-		var $ptr, fullscreen;
-		canvas.canvas.webkitRequestFullScreen();
+	$pkg.GetDisplay = GetDisplay;
+	Rect.ptr.prototype.Top = function() {
+		var $ptr, r, top;
+		top = 0;
+		r = this;
+		top = r.Y;
+		return top;
 	};
-	$pkg.SetFullscreen = SetFullscreen;
-	Log = function(args) {
-		var $ptr, args;
-		console.log($externalize(args, sliceType));
+	Rect.prototype.Top = function() { return this.$val.Top(); };
+	Rect.ptr.prototype.SetTop = function(top) {
+		var $ptr, r, top;
+		r = this;
+		r.Y = top;
 	};
-	$pkg.Log = Log;
-	ptrType.methods = [{prop: "Blit", name: "Blit", pkg: "", typ: $funcType([Surface, $Int, $Int], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([Color], [], false)}, {prop: "SetWidth", name: "SetWidth", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "SetHeight", name: "SetHeight", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Int], false)}];
-	Canvas.init([{prop: "canvas", name: "canvas", pkg: "github.com/Bredgren/gogame", typ: ptrType$1, tag: ""}, {prop: "ctx", name: "ctx", pkg: "github.com/Bredgren/gogame", typ: ptrType$1, tag: ""}]);
-	Surface.init([{prop: "Blit", name: "Blit", pkg: "", typ: $funcType([Surface, $Int, $Int], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([Color], [], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Int], false)}]);
+	Rect.prototype.SetTop = function(top) { return this.$val.SetTop(top); };
+	Rect.ptr.prototype.Bottom = function() {
+		var $ptr, r;
+		r = this;
+		return r.Y + r.H >> 0;
+	};
+	Rect.prototype.Bottom = function() { return this.$val.Bottom(); };
+	Rect.ptr.prototype.SetBottom = function(bottom) {
+		var $ptr, bottom, r;
+		r = this;
+		r.Y = bottom - r.H >> 0;
+	};
+	Rect.prototype.SetBottom = function(bottom) { return this.$val.SetBottom(bottom); };
+	Rect.ptr.prototype.Left = function() {
+		var $ptr, r;
+		r = this;
+		return r.X;
+	};
+	Rect.prototype.Left = function() { return this.$val.Left(); };
+	Rect.ptr.prototype.SetLeft = function(left) {
+		var $ptr, left, r;
+		r = this;
+		r.X = left;
+	};
+	Rect.prototype.SetLeft = function(left) { return this.$val.SetLeft(left); };
+	Rect.ptr.prototype.Right = function() {
+		var $ptr, r;
+		r = this;
+		return r.X + r.W >> 0;
+	};
+	Rect.prototype.Right = function() { return this.$val.Right(); };
+	Rect.ptr.prototype.SetRight = function(right) {
+		var $ptr, r, right;
+		r = this;
+		r.X = right - r.W >> 0;
+	};
+	Rect.prototype.SetRight = function(right) { return this.$val.SetRight(right); };
+	Rect.ptr.prototype.Width = function() {
+		var $ptr, r;
+		r = this;
+		return r.W;
+	};
+	Rect.prototype.Width = function() { return this.$val.Width(); };
+	Rect.ptr.prototype.SetWidth = function(w) {
+		var $ptr, r, w;
+		r = this;
+		r.W = w;
+	};
+	Rect.prototype.SetWidth = function(w) { return this.$val.SetWidth(w); };
+	Rect.ptr.prototype.Height = function() {
+		var $ptr, r;
+		r = this;
+		return r.H;
+	};
+	Rect.prototype.Height = function() { return this.$val.Height(); };
+	Rect.ptr.prototype.SetHeight = function(h) {
+		var $ptr, h, r;
+		r = this;
+		r.H = h;
+	};
+	Rect.prototype.SetHeight = function(h) { return this.$val.SetHeight(h); };
+	Rect.ptr.prototype.Size = function() {
+		var $ptr, _tmp, _tmp$1, h, r, w;
+		w = 0;
+		h = 0;
+		r = this;
+		_tmp = r.W;
+		_tmp$1 = r.H;
+		w = _tmp;
+		h = _tmp$1;
+		return [w, h];
+	};
+	Rect.prototype.Size = function() { return this.$val.Size(); };
+	Rect.ptr.prototype.SetSize = function(w, h) {
+		var $ptr, h, r, w;
+		r = this;
+		r.SetWidth(w);
+		r.SetHeight(h);
+	};
+	Rect.prototype.SetSize = function(w, h) { return this.$val.SetSize(w, h); };
+	Rect.ptr.prototype.TopLeft = function() {
+		var $ptr, _tmp, _tmp$1, r, x, y;
+		x = 0;
+		y = 0;
+		r = this;
+		_tmp = r.Left();
+		_tmp$1 = r.Top();
+		x = _tmp;
+		y = _tmp$1;
+		return [x, y];
+	};
+	Rect.prototype.TopLeft = function() { return this.$val.TopLeft(); };
+	Rect.ptr.prototype.SetTopLeft = function(x, y) {
+		var $ptr, r, x, y;
+		r = this;
+		r.SetLeft(x);
+		r.SetRight(y);
+	};
+	Rect.prototype.SetTopLeft = function(x, y) { return this.$val.SetTopLeft(x, y); };
+	Rect.ptr.prototype.BottomLeft = function() {
+		var $ptr, _tmp, _tmp$1, r, x, y;
+		x = 0;
+		y = 0;
+		r = this;
+		_tmp = r.Left();
+		_tmp$1 = r.Bottom();
+		x = _tmp;
+		y = _tmp$1;
+		return [x, y];
+	};
+	Rect.prototype.BottomLeft = function() { return this.$val.BottomLeft(); };
+	Rect.ptr.prototype.SetBottomLeft = function(x, y) {
+		var $ptr, r, x, y;
+		r = this;
+		r.SetLeft(x);
+		r.SetBottom(y);
+	};
+	Rect.prototype.SetBottomLeft = function(x, y) { return this.$val.SetBottomLeft(x, y); };
+	Rect.ptr.prototype.TopRight = function() {
+		var $ptr, _tmp, _tmp$1, r, x, y;
+		x = 0;
+		y = 0;
+		r = this;
+		_tmp = r.Right();
+		_tmp$1 = r.Top();
+		x = _tmp;
+		y = _tmp$1;
+		return [x, y];
+	};
+	Rect.prototype.TopRight = function() { return this.$val.TopRight(); };
+	Rect.ptr.prototype.SetTopRight = function(x, y) {
+		var $ptr, r, x, y;
+		r = this;
+		r.SetRight(x);
+		r.SetTop(y);
+	};
+	Rect.prototype.SetTopRight = function(x, y) { return this.$val.SetTopRight(x, y); };
+	Rect.ptr.prototype.BottomRight = function() {
+		var $ptr, _tmp, _tmp$1, r, x, y;
+		x = 0;
+		y = 0;
+		r = this;
+		_tmp = r.Right();
+		_tmp$1 = r.Bottom();
+		x = _tmp;
+		y = _tmp$1;
+		return [x, y];
+	};
+	Rect.prototype.BottomRight = function() { return this.$val.BottomRight(); };
+	Rect.ptr.prototype.SetBottomRight = function(x, y) {
+		var $ptr, r, x, y;
+		r = this;
+		r.SetRight(x);
+		r.SetBottom(y);
+	};
+	Rect.prototype.SetBottomRight = function(x, y) { return this.$val.SetBottomRight(x, y); };
+	Rect.ptr.prototype.MidTop = function() {
+		var $ptr, _tmp, _tmp$1, r, x, y;
+		x = 0;
+		y = 0;
+		r = this;
+		_tmp = r.CenterX();
+		_tmp$1 = r.Top();
+		x = _tmp;
+		y = _tmp$1;
+		return [x, y];
+	};
+	Rect.prototype.MidTop = function() { return this.$val.MidTop(); };
+	Rect.ptr.prototype.SetMidTop = function(x, y) {
+		var $ptr, r, x, y;
+		r = this;
+		r.SetCenterX(x);
+		r.SetTop(y);
+	};
+	Rect.prototype.SetMidTop = function(x, y) { return this.$val.SetMidTop(x, y); };
+	Rect.ptr.prototype.MidBottom = function() {
+		var $ptr, _tmp, _tmp$1, r, x, y;
+		x = 0;
+		y = 0;
+		r = this;
+		_tmp = r.CenterX();
+		_tmp$1 = r.Bottom();
+		x = _tmp;
+		y = _tmp$1;
+		return [x, y];
+	};
+	Rect.prototype.MidBottom = function() { return this.$val.MidBottom(); };
+	Rect.ptr.prototype.SetMidBottom = function(x, y) {
+		var $ptr, r, x, y;
+		r = this;
+		r.SetCenterX(x);
+		r.SetBottom(y);
+	};
+	Rect.prototype.SetMidBottom = function(x, y) { return this.$val.SetMidBottom(x, y); };
+	Rect.ptr.prototype.MidLeft = function() {
+		var $ptr, _tmp, _tmp$1, r, x, y;
+		x = 0;
+		y = 0;
+		r = this;
+		_tmp = r.Left();
+		_tmp$1 = r.CenterY();
+		x = _tmp;
+		y = _tmp$1;
+		return [x, y];
+	};
+	Rect.prototype.MidLeft = function() { return this.$val.MidLeft(); };
+	Rect.ptr.prototype.SetMidLeft = function(x, y) {
+		var $ptr, r, x, y;
+		r = this;
+		r.SetLeft(x);
+		r.SetCenterY(y);
+	};
+	Rect.prototype.SetMidLeft = function(x, y) { return this.$val.SetMidLeft(x, y); };
+	Rect.ptr.prototype.MidRight = function() {
+		var $ptr, _tmp, _tmp$1, r, x, y;
+		x = 0;
+		y = 0;
+		r = this;
+		_tmp = r.Right();
+		_tmp$1 = r.CenterY();
+		x = _tmp;
+		y = _tmp$1;
+		return [x, y];
+	};
+	Rect.prototype.MidRight = function() { return this.$val.MidRight(); };
+	Rect.ptr.prototype.SetMidRight = function(x, y) {
+		var $ptr, r, x, y;
+		r = this;
+		r.SetRight(x);
+		r.SetCenterY(y);
+	};
+	Rect.prototype.SetMidRight = function(x, y) { return this.$val.SetMidRight(x, y); };
+	Rect.ptr.prototype.Center = function() {
+		var $ptr, _tmp, _tmp$1, r, x, y;
+		x = 0;
+		y = 0;
+		r = this;
+		_tmp = r.CenterX();
+		_tmp$1 = r.CenterY();
+		x = _tmp;
+		y = _tmp$1;
+		return [x, y];
+	};
+	Rect.prototype.Center = function() { return this.$val.Center(); };
+	Rect.ptr.prototype.SetCenter = function(x, y) {
+		var $ptr, r, x, y;
+		r = this;
+		r.SetCenterX(x);
+		r.SetCenterY(y);
+	};
+	Rect.prototype.SetCenter = function(x, y) { return this.$val.SetCenter(x, y); };
+	Rect.ptr.prototype.CenterX = function() {
+		var $ptr, _q, r;
+		r = this;
+		return r.X + (_q = r.W / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+	};
+	Rect.prototype.CenterX = function() { return this.$val.CenterX(); };
+	Rect.ptr.prototype.SetCenterX = function(x) {
+		var $ptr, _q, r, x;
+		r = this;
+		r.X = x - (_q = r.W / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+	};
+	Rect.prototype.SetCenterX = function(x) { return this.$val.SetCenterX(x); };
+	Rect.ptr.prototype.CenterY = function() {
+		var $ptr, _q, r;
+		r = this;
+		return r.Y + (_q = r.H / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+	};
+	Rect.prototype.CenterY = function() { return this.$val.CenterY(); };
+	Rect.ptr.prototype.SetCenterY = function(y) {
+		var $ptr, _q, r, y;
+		r = this;
+		r.Y = y - (_q = r.H / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+	};
+	Rect.prototype.SetCenterY = function(y) { return this.$val.SetCenterY(y); };
+	Rect.ptr.prototype.Copy = function() {
+		var $ptr, r;
+		r = this;
+		return new Rect.ptr(r.X, r.Y, r.W, r.H);
+	};
+	Rect.prototype.Copy = function() { return this.$val.Copy(); };
+	Rect.ptr.prototype.Move = function(dx, dy) {
+		var $ptr, dx, dy, r;
+		r = this;
+		return new Rect.ptr(r.X + dx >> 0, r.Y + dy >> 0, r.W, r.H);
+	};
+	Rect.prototype.Move = function(dx, dy) { return this.$val.Move(dx, dy); };
+	Rect.ptr.prototype.MoveIP = function(dx, dy) {
+		var $ptr, dx, dy, r;
+		r = this;
+		r.X = r.X + (dx) >> 0;
+		r.Y = r.Y + (dy) >> 0;
+	};
+	Rect.prototype.MoveIP = function(dx, dy) { return this.$val.MoveIP(dx, dy); };
+	Rect.ptr.prototype.Inflate = function(dw, dh) {
+		var $ptr, _q, _q$1, dh, dw, r;
+		r = this;
+		return new Rect.ptr(r.X - (_q = dw / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0, r.Y - (_q$1 = dh / 2, (_q$1 === _q$1 && _q$1 !== 1/0 && _q$1 !== -1/0) ? _q$1 >> 0 : $throwRuntimeError("integer divide by zero")) >> 0, r.W + dw >> 0, r.H + dh >> 0);
+	};
+	Rect.prototype.Inflate = function(dw, dh) { return this.$val.Inflate(dw, dh); };
+	Rect.ptr.prototype.InflateIP = function(dw, dh) {
+		var $ptr, _q, _q$1, dh, dw, r;
+		r = this;
+		r.X = r.X - ((_q = dw / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero"))) >> 0;
+		r.Y = r.Y - ((_q$1 = dh / 2, (_q$1 === _q$1 && _q$1 !== 1/0 && _q$1 !== -1/0) ? _q$1 >> 0 : $throwRuntimeError("integer divide by zero"))) >> 0;
+		r.W = r.W + (dw) >> 0;
+		r.H = r.H + (dh) >> 0;
+	};
+	Rect.prototype.InflateIP = function(dw, dh) { return this.$val.InflateIP(dw, dh); };
+	Rect.ptr.prototype.Clamp = function(bounds) {
+		var $ptr, _q, _q$1, _tmp, _tmp$1, bounds, newX, newY, r;
+		r = this;
+		_tmp = 0;
+		_tmp$1 = 0;
+		newX = _tmp;
+		newY = _tmp$1;
+		if (r.W > bounds.W) {
+			newX = bounds.CenterX() - (_q = r.W / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+		} else {
+			newX = clampInt(r.X, bounds.X, bounds.Right() - r.W >> 0);
+		}
+		if (r.H > bounds.H) {
+			newY = bounds.CenterY() - (_q$1 = r.H / 2, (_q$1 === _q$1 && _q$1 !== 1/0 && _q$1 !== -1/0) ? _q$1 >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+		} else {
+			newY = clampInt(r.Y, bounds.Y, bounds.Bottom() - r.H >> 0);
+		}
+		return new Rect.ptr(newX, newY, r.W, r.H);
+	};
+	Rect.prototype.Clamp = function(bounds) { return this.$val.Clamp(bounds); };
+	Rect.ptr.prototype.ClampIP = function(bounds) {
+		var $ptr, bounds, r;
+		r = this;
+		if (r.W > bounds.W) {
+			r.SetCenterX(bounds.CenterX());
+		} else {
+			r.X = clampInt(r.X, bounds.X, bounds.Right() - r.W >> 0);
+		}
+		if (r.H > bounds.H) {
+			r.SetCenterY(bounds.CenterY());
+		} else {
+			r.Y = clampInt(r.Y, bounds.Y, bounds.Bottom() - r.H >> 0);
+		}
+	};
+	Rect.prototype.ClampIP = function(bounds) { return this.$val.ClampIP(bounds); };
+	Rect.ptr.prototype.Intersect = function(other) {
+		var $ptr, newX, newY, other, r;
+		r = this;
+		newX = maxInt(r.X, other.X);
+		newY = maxInt(r.Y, other.Y);
+		return new Rect.ptr(newX, newY, minInt(r.Right(), other.Right()) - newX >> 0, minInt(r.Bottom(), other.Bottom()) - newY >> 0);
+	};
+	Rect.prototype.Intersect = function(other) { return this.$val.Intersect(other); };
+	Rect.ptr.prototype.Union = function(other) {
+		var $ptr, newX, newY, other, r;
+		r = this;
+		newX = minInt(r.X, other.X);
+		newY = minInt(r.Y, other.Y);
+		return new Rect.ptr(newX, newY, maxInt(r.Right(), other.Right()) - newX >> 0, maxInt(r.Bottom(), other.Bottom()) - newY >> 0);
+	};
+	Rect.prototype.Union = function(other) { return this.$val.Union(other); };
+	Rect.ptr.prototype.UnionIP = function(other) {
+		var $ptr, newX, newY, other, r;
+		r = this;
+		newX = minInt(r.X, other.X);
+		newY = minInt(r.Y, other.Y);
+		r.W = maxInt(r.Right(), other.Right()) - newX >> 0;
+		r.H = maxInt(r.Bottom(), other.Bottom()) - newY >> 0;
+		r.X = newX;
+		r.Y = newY;
+	};
+	Rect.prototype.UnionIP = function(other) { return this.$val.UnionIP(other); };
+	Rect.ptr.prototype.UnionAll = function(others) {
+		var $ptr, _i, _i$1, _ref, _ref$1, _tmp, _tmp$1, _tmp$2, _tmp$3, farBottom, farRight, newX, newY, other, other$1, others, r;
+		r = this;
+		_tmp = r.X;
+		_tmp$1 = r.Y;
+		newX = _tmp;
+		newY = _tmp$1;
+		_ref = others;
+		_i = 0;
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
+			other = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+			newX = minInt(newX, other.X);
+			newY = minInt(newY, other.Y);
+			_i++;
+		}
+		_tmp$2 = r.Right();
+		_tmp$3 = r.Bottom();
+		farRight = _tmp$2;
+		farBottom = _tmp$3;
+		_ref$1 = others;
+		_i$1 = 0;
+		while (true) {
+			if (!(_i$1 < _ref$1.$length)) { break; }
+			other$1 = ((_i$1 < 0 || _i$1 >= _ref$1.$length) ? $throwRuntimeError("index out of range") : _ref$1.$array[_ref$1.$offset + _i$1]);
+			farRight = maxInt(farRight, other$1.Right());
+			farBottom = minInt(farBottom, other$1.Bottom());
+			_i$1++;
+		}
+		return new Rect.ptr(newX, newY, farRight - newX >> 0, farBottom - newY >> 0);
+	};
+	Rect.prototype.UnionAll = function(others) { return this.$val.UnionAll(others); };
+	Rect.ptr.prototype.Fit = function(bounds) {
+		var $ptr, _q, _q$1, bounds, newH, newW, r;
+		r = this;
+		newW = $imul(bounds.H, ((_q = r.W / r.H, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero"))));
+		if (newW <= bounds.W) {
+			return new Rect.ptr(clampInt(r.X, bounds.X, bounds.Right() - newW >> 0), bounds.Y, newW, bounds.H);
+		}
+		newH = $imul(bounds.W, ((_q$1 = r.H / r.W, (_q$1 === _q$1 && _q$1 !== 1/0 && _q$1 !== -1/0) ? _q$1 >> 0 : $throwRuntimeError("integer divide by zero"))));
+		return new Rect.ptr(bounds.X, clampInt(r.Y, bounds.Y, bounds.Bottom() - newH >> 0), bounds.W, newH);
+	};
+	Rect.prototype.Fit = function(bounds) { return this.$val.Fit(bounds); };
+	Rect.ptr.prototype.Normalize = function() {
+		var $ptr, r;
+		r = this;
+		if (r.W < 0) {
+			r.X = r.X + (r.W) >> 0;
+			r.W = -r.W;
+		}
+		if (r.H < 0) {
+			r.Y = r.Y + (r.H) >> 0;
+			r.H = -r.H;
+		}
+	};
+	Rect.prototype.Normalize = function() { return this.$val.Normalize(); };
+	Rect.ptr.prototype.Contains = function(other) {
+		var $ptr, other, r;
+		r = this;
+		return other.X >= r.X && other.Y >= r.W && other.Right() <= r.Right() && other.Bottom() <= r.Bottom();
+	};
+	Rect.prototype.Contains = function(other) { return this.$val.Contains(other); };
+	Rect.ptr.prototype.CollidePoint = function(x, y) {
+		var $ptr, r, x, y;
+		r = this;
+		return x >= r.X && x < r.Right() && y >= r.Y && y < r.Bottom();
+	};
+	Rect.prototype.CollidePoint = function(x, y) { return this.$val.CollidePoint(x, y); };
+	Rect.ptr.prototype.CollideRect = function(other) {
+		var $ptr, other, r;
+		r = this;
+		return r.X < other.Right() && r.Right() > other.X && r.Y < other.Bottom() && r.Bottom() > other.Y;
+	};
+	Rect.prototype.CollideRect = function(other) { return this.$val.CollideRect(other); };
+	Rect.ptr.prototype.CollideList = function(others) {
+		var $ptr, _i, _ref, i, other, others, r;
+		r = this;
+		_ref = others;
+		_i = 0;
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
+			i = _i;
+			other = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+			if (r.CollideRect(other)) {
+				return i;
+			}
+			_i++;
+		}
+		return -1;
+	};
+	Rect.prototype.CollideList = function(others) { return this.$val.CollideList(others); };
+	Rect.ptr.prototype.CollideListAll = function(others) {
+		var $ptr, _i, _ref, i, list, other, others, r;
+		r = this;
+		list = $makeSlice(sliceType$1, 0, others.$length);
+		_ref = others;
+		_i = 0;
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
+			i = _i;
+			other = ((_i < 0 || _i >= _ref.$length) ? $throwRuntimeError("index out of range") : _ref.$array[_ref.$offset + _i]);
+			if (r.CollideRect(other)) {
+				list = $append(list, i);
+			}
+			_i++;
+		}
+		return list;
+	};
+	Rect.prototype.CollideListAll = function(others) { return this.$val.CollideListAll(others); };
+	maxInt = function(a, b) {
+		var $ptr, a, b;
+		if (a > b) {
+			return a;
+		}
+		return b;
+	};
+	minInt = function(a, b) {
+		var $ptr, a, b;
+		if (a < b) {
+			return a;
+		}
+		return b;
+	};
+	clampInt = function(i, min, max) {
+		var $ptr, i, max, min;
+		return maxInt(minInt(i, max), min);
+	};
+	surface.ptr.prototype.GetCanvas = function() {
+		var $ptr, s;
+		s = this;
+		return s.canvas;
+	};
+	surface.prototype.GetCanvas = function() { return this.$val.GetCanvas(); };
+	surface.ptr.prototype.Blit = function(source, x, y) {
+		var $ptr, _r, s, source, x, y, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; s = $f.s; source = $f.source; x = $f.x; y = $f.y; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		s = this;
+		_r = source.GetCanvas(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		s.canvas.drawImage(_r, x, y);
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: surface.ptr.prototype.Blit }; } $f.$ptr = $ptr; $f._r = _r; $f.s = s; $f.source = source; $f.x = x; $f.y = y; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	surface.prototype.Blit = function(source, x, y) { return this.$val.Blit(source, x, y); };
+	surface.ptr.prototype.BlitArea = function(source, area, x, y) {
+		var $ptr, _r, area, s, source, x, y, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; area = $f.area; s = $f.s; source = $f.source; x = $f.x; y = $f.y; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		s = this;
+		_r = source.GetCanvas(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		s.canvas.drawImage(_r, area.X, area.Y, area.W, area.H, x, y, area.W, area.H);
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: surface.ptr.prototype.BlitArea }; } $f.$ptr = $ptr; $f._r = _r; $f.area = area; $f.s = s; $f.source = source; $f.x = x; $f.y = y; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	surface.prototype.BlitArea = function(source, area, x, y) { return this.$val.BlitArea(source, area, x, y); };
+	surface.ptr.prototype.Fill = function(color) {
+		var $ptr, _r, color, s, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; color = $f.color; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		color = $clone(color, Color);
+		s = this;
+		_r = color.String(); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		s.ctx.fillStyle = $externalize(_r, $String);
+		s.ctx.fillRect(0, 0, s.canvas.width, s.canvas.height);
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: surface.ptr.prototype.Fill }; } $f.$ptr = $ptr; $f._r = _r; $f.color = color; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	surface.prototype.Fill = function(color) { return this.$val.Fill(color); };
+	surface.ptr.prototype.Width = function() {
+		var $ptr, s;
+		s = this;
+		return $parseFloat(s.canvas.width);
+	};
+	surface.prototype.Width = function() { return this.$val.Width(); };
+	surface.ptr.prototype.Height = function() {
+		var $ptr, s;
+		s = this;
+		return $parseFloat(s.canvas.height);
+	};
+	surface.prototype.Height = function() { return this.$val.Height(); };
+	surface.ptr.prototype.DrawRect = function(r, c, width) {
+		var $ptr, _r, _r$1, c, f, r, s, width, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r = $f._r; _r$1 = $f._r$1; c = $f.c; f = $f.f; r = $f.r; s = $f.s; width = $f.width; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		c = $clone(c, Color);
+		s = this;
+		s.ctx.save();
+		f = "";
+		/* */ if (width <= 0) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (width <= 0) { */ case 1:
+			f = "fillRect";
+			_r = c.String(); /* */ $s = 4; case 4: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			s.ctx.fillStyle = $externalize(_r, $String);
+			$s = 3; continue;
+		/* } else { */ case 2:
+			f = "strokeRect";
+			_r$1 = c.String(); /* */ $s = 5; case 5: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			s.ctx.strokeStyle = $externalize(_r$1, $String);
+			s.ctx.lineWidth = width;
+		/* } */ case 3:
+		s.ctx[$externalize(f, $String)](r.X, r.Y, r.W, r.H);
+		s.ctx.restore();
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: surface.ptr.prototype.DrawRect }; } $f.$ptr = $ptr; $f._r = _r; $f._r$1 = _r$1; $f.c = c; $f.f = f; $f.r = r; $f.s = s; $f.width = width; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	surface.prototype.DrawRect = function(r, c, width) { return this.$val.DrawRect(r, c, width); };
+	ptrType$1.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}];
+	ptrType.methods = [{prop: "SetWidth", name: "SetWidth", pkg: "", typ: $funcType([$Float64], [], false)}, {prop: "SetHeight", name: "SetHeight", pkg: "", typ: $funcType([$Float64], [], false)}];
+	ptrType$2.methods = [{prop: "Top", name: "Top", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetTop", name: "SetTop", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Bottom", name: "Bottom", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetBottom", name: "SetBottom", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Left", name: "Left", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetLeft", name: "SetLeft", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Right", name: "Right", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetRight", name: "SetRight", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetWidth", name: "SetWidth", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetHeight", name: "SetHeight", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Size", name: "Size", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetSize", name: "SetSize", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "TopLeft", name: "TopLeft", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetTopLeft", name: "SetTopLeft", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "BottomLeft", name: "BottomLeft", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetBottomLeft", name: "SetBottomLeft", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "TopRight", name: "TopRight", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetTopRight", name: "SetTopRight", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "BottomRight", name: "BottomRight", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetBottomRight", name: "SetBottomRight", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MidTop", name: "MidTop", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetMidTop", name: "SetMidTop", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MidBottom", name: "MidBottom", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetMidBottom", name: "SetMidBottom", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MidLeft", name: "MidLeft", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetMidLeft", name: "SetMidLeft", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "MidRight", name: "MidRight", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetMidRight", name: "SetMidRight", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Center", name: "Center", pkg: "", typ: $funcType([], [$Int, $Int], false)}, {prop: "SetCenter", name: "SetCenter", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "CenterX", name: "CenterX", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetCenterX", name: "SetCenterX", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "CenterY", name: "CenterY", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "SetCenterY", name: "SetCenterY", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Copy", name: "Copy", pkg: "", typ: $funcType([], [Rect], false)}, {prop: "Move", name: "Move", pkg: "", typ: $funcType([$Int, $Int], [Rect], false)}, {prop: "MoveIP", name: "MoveIP", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Inflate", name: "Inflate", pkg: "", typ: $funcType([$Int, $Int], [Rect], false)}, {prop: "InflateIP", name: "InflateIP", pkg: "", typ: $funcType([$Int, $Int], [], false)}, {prop: "Clamp", name: "Clamp", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "ClampIP", name: "ClampIP", pkg: "", typ: $funcType([ptrType$2], [], false)}, {prop: "Intersect", name: "Intersect", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "Union", name: "Union", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "UnionIP", name: "UnionIP", pkg: "", typ: $funcType([ptrType$2], [], false)}, {prop: "UnionAll", name: "UnionAll", pkg: "", typ: $funcType([sliceType$2], [Rect], false)}, {prop: "Fit", name: "Fit", pkg: "", typ: $funcType([ptrType$2], [Rect], false)}, {prop: "Normalize", name: "Normalize", pkg: "", typ: $funcType([], [], false)}, {prop: "Contains", name: "Contains", pkg: "", typ: $funcType([ptrType$2], [$Bool], false)}, {prop: "CollidePoint", name: "CollidePoint", pkg: "", typ: $funcType([$Int, $Int], [$Bool], false)}, {prop: "CollideRect", name: "CollideRect", pkg: "", typ: $funcType([ptrType$2], [$Bool], false)}, {prop: "CollideList", name: "CollideList", pkg: "", typ: $funcType([sliceType$2], [$Int], false)}, {prop: "CollideListAll", name: "CollideListAll", pkg: "", typ: $funcType([sliceType$2], [sliceType$1], false)}];
+	ptrType$4.methods = [{prop: "GetCanvas", name: "GetCanvas", pkg: "", typ: $funcType([], [ptrType$3], false)}, {prop: "Blit", name: "Blit", pkg: "", typ: $funcType([Surface, $Float64, $Float64], [], false)}, {prop: "BlitArea", name: "BlitArea", pkg: "", typ: $funcType([Surface, ptrType$2, $Float64, $Float64], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([Color], [], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "DrawRect", name: "DrawRect", pkg: "", typ: $funcType([ptrType$2, Color, $Float64], [], false)}];
+	Color.init([{prop: "R", name: "R", pkg: "", typ: $Float64, tag: ""}, {prop: "G", name: "G", pkg: "", typ: $Float64, tag: ""}, {prop: "B", name: "B", pkg: "", typ: $Float64, tag: ""}, {prop: "A", name: "A", pkg: "", typ: $Float64, tag: ""}]);
+	Display.init([{prop: "surface", name: "", pkg: "github.com/Bredgren/gogame", typ: surface, tag: ""}]);
+	Rect.init([{prop: "X", name: "X", pkg: "", typ: $Int, tag: ""}, {prop: "Y", name: "Y", pkg: "", typ: $Int, tag: ""}, {prop: "W", name: "W", pkg: "", typ: $Int, tag: ""}, {prop: "H", name: "H", pkg: "", typ: $Int, tag: ""}]);
+	Surface.init([{prop: "Blit", name: "Blit", pkg: "", typ: $funcType([Surface, $Float64, $Float64], [], false)}, {prop: "BlitArea", name: "BlitArea", pkg: "", typ: $funcType([Surface, ptrType$2, $Float64, $Float64], [], false)}, {prop: "Fill", name: "Fill", pkg: "", typ: $funcType([Color], [], false)}, {prop: "GetCanvas", name: "GetCanvas", pkg: "", typ: $funcType([], [ptrType$3], false)}, {prop: "Height", name: "Height", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "Width", name: "Width", pkg: "", typ: $funcType([], [$Float64], false)}]);
+	surface.init([{prop: "canvas", name: "canvas", pkg: "github.com/Bredgren/gogame", typ: ptrType$3, tag: ""}, {prop: "ctx", name: "ctx", pkg: "github.com/Bredgren/gogame", typ: ptrType$3, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -18888,7 +19574,9 @@ $packages["github.com/Bredgren/gogame"] = (function() {
 		$r = jquery.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = log.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = math.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		canvas = ptrType.nil;
+		display = ptrType.nil;
+		$pkg.Black = new Color.ptr(0, 0, 0, 1);
+		$pkg.White = new Color.ptr(1, 1, 1, 1);
 		jq = jquery.NewJQuery;
 		console = $global.console;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
@@ -18914,29 +19602,31 @@ $packages["main"] = (function() {
 			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _r$1 = $f._r$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 			_r$1 = $recv(ready[0]); /* */ $s = 1; case 1: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 			_r$1[0];
-			initGG();
-			$r = start(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = initGG(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$r = start(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.$ptr = $ptr; $f._r$1 = _r$1; $f.$s = $s; $f.$r = $r; return $f;
 		}; })(ready), []);
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: main }; } $f.$ptr = $ptr; $f._r = _r; $f.ready = ready; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	initGG = function() {
-		var $ptr, _tmp, _tmp$1, canvas, height, width;
+		var $ptr, _tmp, _tmp$1, canvas, height, width, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; canvas = $f.canvas; height = $f.height; width = $f.width; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		_tmp = 900;
 		_tmp$1 = 600;
 		width = _tmp;
 		height = _tmp$1;
-		canvas = gogame.GetCanvas();
+		canvas = gogame.GetDisplay();
 		canvas.SetWidth(width);
 		canvas.SetHeight(height);
-		canvas.Fill("rgba(0, 0, 0, 1.0)");
+		$r = canvas.surface.Fill(gogame.Black); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: initGG }; } $f.$ptr = $ptr; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f.canvas = canvas; $f.height = height; $f.width = width; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	start = function() {
 		var $ptr, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $ptr = $f.$ptr; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = log.Println(new sliceType([new $String("start")])); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		gogame.Log(new sliceType([gogame.GetCanvas()]));
-		gogame.SetFullscreen(true);
+		$r = gogame.GetDisplay().surface.DrawRect(new gogame.Rect.ptr(10, 10, 50, 50), gogame.White, 0); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = gogame.GetDisplay().surface.DrawRect(new gogame.Rect.ptr(70, 11, 48, 48), gogame.White, 4); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* */ $s = -1; case -1: } return; } if ($f === undefined) { $f = { $blk: start }; } $f.$ptr = $ptr; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$init = function() {
