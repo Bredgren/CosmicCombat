@@ -27,6 +27,6 @@ func initGG() {
 
 func start() {
 	log.Println("start")
-	gogame.GetDisplay().DrawRect(&gogame.Rect{X: 10, Y: 10, W: 50, H: 50}, gogame.White, 0)
-	gogame.GetDisplay().DrawRect(&gogame.Rect{X: 70, Y: 11, W: 48, H: 48}, gogame.White, 4)
+	gogame.GetDisplay().DrawRectFill(&gogame.Rect{X: 10, Y: 10, W: 50, H: 50}, &gogame.FillStyle{Color: gogame.White})
+	gogame.GetDisplay().DrawRect(&gogame.Rect{X: 70, Y: 11, W: 48, H: 48}, &gogame.StrokeStyle{Color: gogame.White, Width: 4})
 }
